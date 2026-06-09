@@ -1,66 +1,65 @@
 # Current System Audit
 
 ## Overview
-This audit covers the current `halo-system` implementation in the repository.
+This audit reflects the current repository state as verified from the live backend on 2026-06-09.
 
-> Update: The live backend now includes a real Phase 1 implementation with Sequelize/SQLite persistence, JWT auth, MFA, RBAC, audit logging, client and ticket support, and a new SLA foundation. Phase 3 client portal API support is being started.
+The project has moved well beyond the original single-page prototype. It now contains a real backend foundation with persistent SQLite storage, authenticated access, role-based access control, tickets, clients, monitoring, audit logging and a dashboard service.
 
-The current project is a secure core platform that has already advanced beyond the original starter skeleton.
+## Verified implementation status
+### Backend
+- Express-based Node.js backend in halo-system/backend
+- Sequelize + SQLite persistence via halo-system/backend/db/models.js and halo-system/backend/db/setup.js
+- Authentication routes for register/login/logout/me/refresh
+- JWT-based auth and middleware-based authorization
+- RBAC middleware for user, ticket, client and monitoring routes
+- MFA support in the authentication service and routes
+- Ticket CRUD, assignment, approvals, time tracking and SLA awareness
+- Client CRUD and client-user membership flows
+- Dashboard metrics and alerting
+- Monitoring health/device/heartbeat endpoints
+- Audit logging and failure logging
+- SLA summary and ticket SLA detail routes
 
-## Project Structure
-- `halo-system/backend/package.json`
-- `halo-system/backend/server.js`
-- `halo-system/frontend/index.html`
+### Frontend
+- Static frontend shells for login, dashboard, client portal and admin AI settings
+- API helper scripts for backend communication
+- Basic portal and dashboard presentation files are present
 
-## Existing Backend Capabilities
-- Node.js backend using Express.
-- CORS enabled globally via `cors` middleware.
-- JSON request parsing via `express.json()`.
-- In-memory ticket storage using a simple `tickets` array.
-- Health check endpoint at `GET /`.
-- AI endpoint at `POST /ai` that returns a local echo response.
-- Ticket creation endpoint at `POST /tickets`.
-- Ticket listing endpoint at `GET /tickets`.
-- Runs on port `3000` by default.
+## Verified live endpoints
+The following endpoints were exercised successfully during the current audit:
+- GET /
+- POST /api/auth/login
+- GET /api/dashboard
+- GET /api/tickets
+- GET /api/clients
+- GET /api/sla/summary
+- GET /api/monitoring/devices
+- GET /api/audit-logs
 
-## Existing Frontend Capabilities
-- Static HTML page with inline CSS.
-- AI chat input and send button.
-- Create ticket input and create button.
-- Ticket list display.
-- Dynamic backend URL resolution for Codespaces and localhost.
-- Uses `fetch()` for API calls.
-- Displays the AI response and the list of current tickets.
-- Basic form validation for prompt and ticket title.
+## Current maturity level
+### Fully operational or mostly operational
+- Core backend runtime
+- Auth and user management
+- Dashboard and reporting backend
+- Ticketing and client foundations
+- Monitoring and audit logging
+- MFA backend wiring
 
-## Existing Database Implementation
-- No external or persistent database is present.
-- Ticket management uses an in-memory array.
-- Data is lost when the backend restarts.
+### Partially implemented
+- AI settings endpoints and AI provider config exist, but real external AI provider integration is not yet fully wired end to end
+- Frontend screens exist but do not yet cover every business module fully
+- SLA logic is present but needs richer client package logic and automation
 
-## Existing API Routes
-- `GET /` — health check.
-- `POST /ai` — receives `{ prompt }` and returns `{ reply }`.
-- `POST /tickets` — receives `{ title }`, creates a ticket, and returns the ticket object.
-- `GET /tickets` — returns the current ticket list.
+### Still planned or not yet implemented
+- Knowledge base and client KB workflows
+- Invoicing, quoting and accounting workflows
+- RMM and backup-agent workflows
+- Learning centre and exam sponsorships
+- Integrations centre
+- Security operations centre, vault and policy management
+- App builder / DevConsole / deployment rollback
+- Shop, VoIP and broader commercial modules
 
-## Existing Authentication
-- No authentication system exists.
-- No user login, permissions, or session management is implemented.
+## Known fix completed during this pass
+The dashboard endpoint had been failing because the service still referenced old SLA fields. That issue has now been corrected so the dashboard metrics endpoint uses the current schema and responds properly.
 
-## Existing AI Integration
-- Existing AI support is a local stub: `POST /ai` returns `Halo AI says: <prompt>`.
-- There is no external AI provider integration.
-- No chat history persistence, user context, or AI model selection.
-
-## Architecture
-- Frontend: single static HTML page served independently (likely via a simple static file server).
-- Backend: Express server handling API routes.
-- Communication: frontend calls backend via `fetch()` using a dynamic base URL.
-- Data: in-memory storage only, no persistence layer.
-- Deployment: designed to run in Codespaces and local development.
-
-## Notes
-- The current system implements only the very core skeleton of the requested Halo IT product.
-- Most of the requirements in `README.md` are not implemented yet.
-- The current implementation is suitable as a starter prototype but lacks production features, persistence, security, and domain-specific functionality.

@@ -1,135 +1,59 @@
 # Gap Analysis
 
-## Summary
-The current system has progressed into a real Phase 1+ implementation with a working backend, authentication, RBAC, client support, ticketing, and initial SLA functionality. It is no longer only a minimal starter app.
+## Current status
+The project has moved from a prototype into a real platform foundation. The major core modules are now present in the backend, and the main remaining gap is the product-layer expansion on top of that foundation.
 
-## Current Implementation vs Requested System
-- Current implementation: basic AI prompt echo, ticket creation/listing, and Codespaces-compatible frontend-backend connectivity.
-- Requested system: a full Halo IT platform with dashboard, ticketing, clients, invoicing, AI, RMM, learning, integrations, security, and app builder.
-- The current system is missing nearly all production-level features from the requested specification.
+## What is now in place
+- Persistent data layer via SQLite and Sequelize
+- Authentication and RBAC
+- Ticketing and client management
+- SLA and dashboard reporting
+- Monitoring and audit logging
+- MFA backend support
 
-## Gap Analysis by Phase
+## Main gaps to the full Halo vision
+### 1. Knowledge base and content operations
+Gap: no article lifecycle, search, tagging or client-scoped KB experience.
+Need: content model, editor UI, permissions, search and audit.
 
-### Phase 1: Core Platform
-Missing:
-- Dashboard overview and monitoring pages.
-- User authentication and authorization.
-- Role-based access control.
-- Persistent database storage.
-- Application shell and navigation.
-- Audit logging.
-- System notifications and alerts.
-- Client and agent management.
-- Project and SLA frameworks.
-- Data persistence and data migration.
+### 2. Commercial modules
+Gap: no invoicing, quoting, accounting or payment workflows.
+Need: invoice templates, quote requests, commercial approval rules, accounting metadata and tax/VAT support.
 
-### Phase 2: Ticketing
-Missing:
-- Full ticket lifecycle with open/in-progress/closed states.
-- Ticket priorities, planned/unplanned maintenance, support/request/change request categories.
-- Ticket assignments, approvals, and review workflows.
-- Audit trail for ticket actions.
-- Ticket permissions and team isolation.
-- Client-facing ticket portal.
-- System-generated alerts and RMM-triggered tickets.
-- Time tracking integration.
-- Ticket statistics, export, and reporting.
+### 3. RMM and backup
+Gap: no device agent lifecycle, remote actions, backup agents or backup scheduling.
+Need: device inventory, heartbeat, alert automation, backup policies and encrypted offsite targets.
 
-### Phase 3: Clients
-Missing:
-- Client portal and client-specific dashboards.
-- Client login, account management, and contact roles.
-- Client device and asset management.
-- Client permissions, onboarding, offboarding, and secure access flows.
-- Client SLA package management.
-- Identity verification and access approval workflows.
+### 4. Learning centre
+Gap: no training paths, course catalog, progress tracking or sponsor workflows.
+Need: course modules, exam links, KPI reporting and user progress records.
 
-### Phase 4: Invoicing
-Missing:
-- Invoice generation and invoice templates.
-- Client billing, service charges, travel charges, and time billing.
-- Invoice editing and permission-based invoicing.
-- Automatic invoice drafts from ticket/job closure.
-- Accounting area with taxes/VAT.
-- Quotation and pricing request workflows.
-- Payment methods and integration.
+### 5. Integrations centre
+Gap: no managed integrations for third-party tools or admin-consented automation.
+Need: connector model, approval workflow, secrets storage and health checks.
 
-### Phase 5: AI
-Missing:
-- Real AI model integration.
-- External AI provider support and backup models.
-- AI chat history persistence and retention policies.
-- AI media upload support.
-- AI customization per internal and client usage.
-- AI-driven system actions and code editing.
-- AI-enabled knowledge base search.
-- AI prompt-based workflows for invoicing, quoting, and troubleshooting.
+### 6. Security centre and vault
+Gap: no SOC, threat scoring, vault, policy engine or secure admin controls.
+Need: security scoring, alerts, password vault model, MFA policy controls and incident workflows.
 
-### Phase 6: RMM
-Missing:
-- Remote monitoring and management agent support.
-- Device health monitoring, patch/update management, and remote shell access.
-- RMM deployment and provisioning.
-- Token-based security and tiered client RMM services.
-- Backup integration and alert generation.
-- Device/service integration with tickets and dashboard.
+### 7. App builder and DevConsole
+Gap: no build pipeline, deployment guardrails or rollback experience.
+Need: project builder, artifact storage, signing, rollback and terminal access controls.
 
-### Phase 7: Learning
-Missing:
-- Training and learning management system.
-- Course and exam progress tracking.
-- AI-generated learning paths.
-- Exam booking and sponsorship workflows.
-- Agent performance statistics and KPI tracking.
-- Learning content management.
+### 8. Frontend completeness
+Gap: the backend is strong, but many business modules still need polished UI workflows.
+Need: screen-by-screen implementation for dashboard, tickets, clients, KB, invoices, RMM, security and DevConsole.
 
-### Phase 8: Integrations
-Missing:
-- Integration center for third-party services.
-- Connectors for Slack, GitHub, Clockify, Xero, Microsoft, WordPress, etc.
-- Admin-managed integration approvals.
-- API and admin login integration flows.
-- AI-assisted integration setup and management.
+## Priority order
+1. Complete the business module UI for tickets, clients and dashboard.
+2. Add knowledge base and commercial modules.
+3. Build RMM and backup automation.
+4. Deliver learning, integrations and security operations.
+5. Add app builder and DevConsole with rollback controls.
 
-### Phase 9: Security
-Missing:
-- Security operations center and threat monitoring.
-- MFA/TOTP and conditional access policies.
-- Security audit tools, breach notification, and incident logging.
-- Vault/password manager support.
-- Secure upload/download, encryption, and backup security.
-- Firewall/VPN guidance, secure agent, and secure system hardening.
+## Recommended next implementation sprint
+- Finish the current UI workflow and permission polish.
+- Introduce KB and quote/invoice data models.
+- Add a first RMM device register/heartbeat flow.
+- Add AI provider integration and a secure chat history model.
 
-### Phase 10: App Builder
-Missing:
-- App building environment and DevConsole.
-- Build pipeline for executables, PWAs, and installers.
-- Code editing, deployment, and rollback support.
-- Artifact signing and workspace app generation.
-- Upload and import app source support.
-
-## Overall Missing Feature Summary
-Implemented:
-- Simple Express backend.
-- Static frontend UI.
-- Minimal ticket CRUD in memory.
-- Basic AI prompt echo endpoint.
-- Codespaces-compatible backend URL mapping.
-
-Not implemented:
-- Persistent database.
-- Authentication and access control.
-- Production-ready ticketing workflows.
-- Client and invoicing modules.
-- Real AI model integration.
-- RMM, learning, integration, security, and app builder subsystems.
-- Audit logging and compliance features.
-
-## Architecture Recommendation (Next Step)
-The next architecture phase should define:
-- A persistent data layer (database and schema).
-- Authentication and RBAC architecture.
-- Modular backend services for ticketing, clients, invoicing, AI, RMM, learning, integrations, security, and app builder.
-- A frontend navigation structure and dashboard layout.
-- An API contract for each major domain.
-- Deployment model for Codespaces and production hosting.

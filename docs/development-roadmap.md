@@ -1,148 +1,89 @@
 # Development Roadmap
 
-## Source of Truth
-- Existing functionality: `docs/CURRENT_SYSTEM_AUDIT.md`
-- Missing functionality: `docs/GAP_ANALYSIS.md`
+## Current phase assessment
+The system is now in a strong Phase 1/2/3 foundation state. The next wave should focus on completing the business modules and then expanding into the operational platforms.
 
-## Roadmap Principles
-- Prioritize authentication and permission foundations first.
-- Build clients and ticketing next as core business capability.
-- Add quotes, invoices, knowledge base, and AI in sequenced phases.
-- Reserve RMM, learning, security, and app builder for later phases.
-- Keep the roadmap aligned with the user-specified priority order.
+## Phase 1 — Core platform
+Status: Complete / operational
+Deliverables now in place:
+- Backend runtime, Express and Node.js
+- SQLite / Sequelize persistence
+- Auth, JWT and RBAC
+- User and role management
+- Audit logging
+- Dashboard and monitoring foundation
 
-## Phase 1: Core Platform
-Goals:
-- Establish persistent storage and user management.
-- Enable secure access and role-based controls.
-- Create the application shell and dashboard foundation.
+## Phase 2 — Ticketing
+Status: Partial / strong foundation
+What is done:
+- Ticket CRUD, assignment, status, priorities and approvals
+- SLA awareness and time tracking
+What remains:
+- richer approval routing, client-facing portal polish, reporting exports and automation triggers
 
-Deliverables:
-- Database integration.
-- Authentication endpoints and login/registration.
-- Roles and permissions model.
-- User management API.
-- Basic dashboard and navigation.
-- Audit logging and error tracking.
+## Phase 3 — Clients
+Status: Partial / strong foundation
+What is done:
+- Client records and client-user membership support
+- Client access controls and portal-ready API shape
+What remains:
+- richer client portal UX, onboarding/offboarding flows and client-specific service views
 
-## Phase 2: Ticketing
-Goals:
-- Implement a complete service desk workflow.
-- Add ticket categories, priorities, status flows, and approvals.
+## Phase 4 — Quotes and invoices
+Status: Planned
+Planned work:
+- quote forms and approvals
+- invoice templates and draft generation
+- accounting metadata and tax/VAT handling
+- billing permissions and automated invoice draft rules
 
-Deliverables:
-- Full ticket CRUD.
-- Ticket states: open, in progress, closed.
-- Categories: support, request, change request.
-- Priority levels and SLA mapping.
-- Ticket comments and audit trail.
-- Ticket assignment and approval workflows.
-- Ticket reporting and exports.
+## Phase 5 — Knowledge base and AI enablement
+Status: Partial / foundation only
+Planned work:
+- KB article lifecycle
+- search, tagging and client-scoped KB content
+- real AI provider integration and chat history retention
+- usage limits and safe agent behaviour
 
-## Phase 3: Clients
-Goals:
-- Introduce clients, contacts, and client-specific access.
-- Support onboarding, offboarding, and client portals.
+## Phase 6 — RMM and backup
+Status: Planned
+Planned work:
+- device registration and heartbeat monitoring
+- patch and alert management
+- remote scripting endpoints and backup policy flow
+- client-specific RMM service tiers
 
-Status:
-- In progress: client portal API and membership support are under development.
+## Phase 7 — Learning centre
+Status: Planned
+Planned work:
+- course catalog and user progress
+- exam booking links and sponsorship workflow
+- KPI and performance reporting
 
-Deliverables:
-- Client profile management.
-- Client contacts and roles.
-- Client device/customer asset records.
-- Client-specific dashboards.
-- Client login and secure client portal.
-- Identity verification workflows.
+## Phase 8 — Integrations centre
+Status: Planned
+Planned work:
+- connector framework for GitHub, Slack, Microsoft, Xero, Clockify, WordPress and more
+- consent-driven integrations and secret handling
+- health checks and admin approval workflows
 
-## Phase 4: Quotes & Invoices
-Goals:
-- Add commercial billing and quote generation.
-- Support draft workflows, templates, and permissions.
+## Phase 9 — Security and vault
+Status: Planned
+Planned work:
+- security scoring and incident workflows
+- vault model and secure secrets storage
+- MFA policy controls and tenant-aware conditional access
 
-Deliverables:
-- Quote creation and approval.
-- Invoice generation, editing, and payment status.
-- Invoice items and templating.
-- Accounting metadata (tax, currency, totals).
-- Invoice draft automation from ticket closure.
-- Permissions for billing and accounting roles.
+## Phase 10 — App builder and DevConsole
+Status: Planned
+Planned work:
+- app project builder, build history and rollback controls
+- developer terminal access and deployment guardrails
+- artifact signing and secure release flows
 
-## Phase 5: Knowledge Base
-Goals:
-- Build a searchable knowledge base for agents and clients.
-- Allow internal and client-scoped documentation.
-
-Deliverables:
-- Knowledge article CRUD.
-- Search and categorization.
-- Article visibility rules.
-- Client-specific KB sections.
-- Audit logging for knowledge edits.
-
-## Phase 6: AI
-Goals:
-- Integrate real AI capabilities beyond the current echo stub.
-- Create a safe internal/external AI workflow.
-
-Deliverables:
-- AI chat endpoints with provider integration.
-- Conversation persistence and retention policies.
-- Model selection and fallback option.
-- AI-driven workflows for invoices, quotes, troubleshooting, and KB search.
-- AI usage limits for clients/guests.
-
-## Phase 7: RMM
-Goals:
-- Add remote monitoring and management concepts.
-- Track devices, agents, and alerts.
-
-Deliverables:
-- Device and agent inventory.
-- RMM onboarding and heartbeat tracking.
-- Remote command execution endpoints.
-- Patch and update management metadata.
-- Alert generation linked to tickets.
-
-## Phase 8: Learning Centre
-Goals:
-- Provide training course and progress tracking.
-- Support exam paths and sponsorship workflows.
-
-Deliverables:
-- Course catalog management.
-- User enrollments and progress tracking.
-- Learning reports and KPIs.
-- Exam booking/resource links.
-- Sponsorship request workflow.
-
-## Phase 9: Security Centre
-Goals:
-- Establish security monitoring and policy controls.
-- Add MFA and audit capabilities.
-
-Deliverables:
-- Security alerts dashboard.
-- Audit logs and threat metrics.
-- MFA/TOTP policy management.
-- Security scan and incident reporting endpoints.
-- Vault/password-style secure storage conceptual support.
-
-## Phase 10: App Builder
-Goals:
-- Add internal app creation and DevConsole capabilities.
-- Enable secure build management and deployment.
-
-Deliverables:
-- App Builder project management.
-- Source upload and build trigger endpoints.
-- Build history and artifact tracking.
-- Rollback support.
-- Secure developer access and workspace isolation.
-
-## Timeline Notes
-- Start with Phase 1 and Phase 2 in tandem where possible.
-- Phase 3 (Clients) should follow ticketing because clients are a dependency for ticket workflows.
-- Quotes and invoices should be built after core ticket and client entities exist.
-- AI can be implemented after basic business entities exist, but an initial stub can remain until later.
-- RMM, learning, security, and app builder can be built as discrete subsystems once core platform stability is established.
+## Immediate next sprint
+1. Finish UI and permission polish for dashboard, tickets and clients.
+2. Add KB data model and article CRUD.
+3. Introduce invoice/quote foundation.
+4. Add first RMM device registration and alert flow.
+5. Hook the AI settings into a real provider with safe history storage.

@@ -22,6 +22,25 @@ class DashboardService {
     }
   }
 
+  getSlaCompliance(ticket) {
+    if (!ticket || !ticket.sla_due_at) {
+      return null;
+    }
+
+    const dueAt = new Date(ticket.sla_due_at);
+    const referenceTime = ticket.resolved_at
+      ? new Date(ticket.resolved_at)
+      : ticket.updated_at
+        ? new Date(ticket.updated_at)
+        : null;
+
+    if (!referenceTime) {
+      return null;
+    }
+
+    return referenceTime <= dueAt;
+  }
+
   /**
    * Get ticket statistics and breakdown
    */
@@ -70,7 +89,7 @@ class DashboardService {
       metrics.overdue = await Ticket.count({
         where: {
           status: { [Op.ne]: 'closed' },
-          sla_due_date: { [Op.lt]: now },
+          sla_due_at: { [Op.lt]: now },
         },
       });
 
@@ -162,7 +181,7 @@ class DashboardService {
           where: {
             client_id: client.id,
             status: { [Op.ne]: 'closed' },
-            sla_due_date: { [Op.lt]: new Date() },
+            sla_due_at: { [Op.lt]: new Date() },
           },
         });
 
@@ -193,24 +212,27 @@ class DashboardService {
         where: { status: 'closed' },
       });
 
-      const withinSla = await Ticket.count({
-        where: {
-          status: 'closed',
-          sla_met: true,
-        },
+      const closedTickets = await Ticket.findAll({
+        where: { status: 'closed' },
+        attributes: ['id', 'sla_due_at', 'resolved_at', 'updated_at'],
       });
 
-      const breachedSla = await Ticket.count({
-        where: {
-          status: 'closed',
-          sla_met: false,
-        },
+      let withinSla = 0;
+      let breachedSla = 0;
+
+      closedTickets.forEach((ticket) => {
+        const isWithinSla = this.getSlaCompliance(ticket);
+        if (isWithinSla === true) {
+          withinSla += 1;
+        } else if (isWithinSla === false) {
+          breachedSla += 1;
+        }
       });
 
       const currentBreaches = await Ticket.count({
         where: {
           status: { [Op.ne]: 'closed' },
-          sla_due_date: { [Op.lt]: new Date() },
+          sla_due_at: { [Op.lt]: new Date() },
         },
       });
 
@@ -276,10 +298,10 @@ class DashboardService {
       const slaBreaches = await Ticket.findAll({
         where: {
           status: { [Op.ne]: 'closed' },
-          sla_due_date: { [Op.lt]: new Date() },
+          sla_due_at: { [Op.lt]: new Date() },
         },
         limit: 10,
-        order: [['sla_due_date', 'ASC']],
+        order: [['sla_due_at', 'ASC']],
         include: [
           { model: Client, attributes: ['name'] },
         ],

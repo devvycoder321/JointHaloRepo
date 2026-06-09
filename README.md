@@ -1,172 +1,47 @@
-# Haloitservices365
+# Halo IT Services 365
 
-## Current Progress
-- Phase 2 SLA engine started and in progress.
-- Phase 3 Client Portal API support is now being built.
-- Existing backend already includes authentication, RBAC, ticketing, audit logging, clients, and SLA foundations.
-- Phase 3 planning documents added: `docs/PHASE3_IMPLEMENTATION_PLAN.md` and `docs/PHASE3_SUMMARY.md`.
+## Current live status (2026-06-09)
+This repository now contains a working backend foundation for the Halo platform, plus a set of frontend shells and planning documents. The backend is currently running locally and serving authenticated API routes.
 
-Below is Project end build requests
-Ok So what I need done from all the data you have is the following
+### Verified working today
+- Backend health endpoint: GET /
+- Authentication: register/login/logout/me and JWT refresh flow
+- RBAC and permission checks for users, tickets, clients and monitoring
+- MFA support is present in the codebase and the backend routes are wired for MFA verification
+- Dashboard metrics endpoint is now working after a schema fix for SLA fields
+- Ticket, client, monitoring, SLA and audit-log APIs are responding
 
-Dashboard
-Standard dashboard giving me a overview 
--See All tickets open, Closed and inprogress
--Progress overall of all work and tickets (Tracking and monitoring aswell as alerts both system and devices with SLA over time and within SLA time)
--Monitoring section for Devices
--Ticket Monitoring
--Agent Status (Staff working for Haloit)
--Client/Client staff progress with quote and invoicing status (Work to be invoiced still and or quotes to be done that was requested)
-(Any notifications that needs to be added as needed for updates and critical flags)
+### Live access
+- Public tunnel: https://haloitservices365.loca.lt
+- Main backend root: https://haloitservices365.loca.lt/
 
-Ticketing system 
--Must be able to create tickets on behalf of clients or other agents and also for myself in the system
--Have overview of all tickets in the ticket centre both agent and client tickets
--System generated tickets should work system wide so monitoring tickets generated from low disk space or otherwise issues triggered like servers offline fr long periods
--Close tickets option however closing tickets needs certain critera to be done like time started and time ending on a task/job support or projects or requests tickets done
--3 main branches of tickets with low medium and high priority system aswell as a separate planned and unplanned maintenance ticketing system 1 branch for support tickets 2nd branch for requests for oor on behalf of clients or tasks to be done and 3rd change rquests for projects and authorization from client to implement changes. For change requests clients must approve (Client site contact or the person appointed as a contact for us as a medium communications agent between client company and us as MSP/IT solutions provider
--Full audit trail of who did what and who it was assigned to 
--Statistics report export/viewer to see all the stats.
--Ticketing system linked to the RMM side of this halo it system so agents can (Installer agent that can be installed on server or desktop/laptop and for Linux/Windows and Ios options... But also have a api option for other type of OS like chromium or android etc)
--Clockify or other time keeping integration possible or if its better add our own time keeping into our entire system for work done and logged so we can invoice more exact on work done and no manual time entry unless adhered to the critera of explanation to why it was done manually
--Ticket system permissions so I can assign all these fuctionalities individually to agents or admins as I see fit like allow standard helpdesk permissions to log and close tickets but managers can view only statistics as a example.
--Teams Isolation so a 2ndline engineer cannot view and or manipulate 3rdline tickets or areas however the higher your team tier like projects can view again 1st 2nd and 3rd line engineer tickets but not manager tickets without permissions shared by the ticket creator. The only way o view tickets outside of permission scope is by granting someone permissions to a ticket you log
--Alerting system part of global for tickets you have oversight of but only tickets you are part of created or worked on.
--Any other adhoc features for this
--Also ticketing system for clients should also have a optional onboarding user or client and offboarding feature aswell as for Halo IT for any new staff joiing or leaving or 3rdparty access requests or general requests section like when a printer company needs assistance with a setup or us to help provide assisted access so they can do their work
--Just need to also note any approvals to be done on change request tickets or tickets needing approvals or tasks needs to be sent to the agents line manager for approval and a second engineer as a peer reviewer for approval and review but if a manager or senior engineer does the tickets or change requests they must list a equal level engineer for review and a optional either manager or senior member listed who was assigned permissions for review with explanation to what and why they need approval if none is higher then it can be approved by themselves however must have a warning with a I accept risks tick box recording the acceptance as proof that the person carries all fall out risks like if I as the owner of the business approves my own tickets as I should be able to and should do I then carry the risks of fall out on myself entirely but still have a option to send to a colleague if I want a second pair of eyes also have the intelligence that if a ticket is made by a senior member but sent to junior checking process automatically should apply to cover us for oversight by junior techs
+### Project tracking docs
+- Current audit: docs/CURRENT_SYSTEM_AUDIT.md
+- Gap analysis: docs/GAP_ANALYSIS.md
+- Feature tracker: docs/feature-tracker.md
+- Development roadmap: docs/development-roadmap.md
+- Xneelo / cPanel hosting plan: docs/xneelo-cpanel-hosting.md
 
-Knowledge Base
--Knowledge base must contain atleast most of general IT troubleshooting KBAs for 1st 2nd and 3rd line engineers and extend even to managers inclusive of all major providers like Linux, Microsoft, major voip systems inclusive of AI voip systems pabx and sbc. All gathered by AI but also have a search the web function where AI can fetch most relevant KAs to prompt of what is wrong as a example if someone ask the AI "I am having a issue uploading files to a NAS Seagate on the network with permissions not authenticating and then fetching most relevant help and logging it for quick find in future but not overloading memory storage.
--guides and help on how to use Halo IT 365 systems (This system that is being built)
--Guides on how to use other major and most known systems in the world for general IT users like how API works in simple terms or how firewall works of watchgaurd and such.
--Basic to advanced support guides and KBA's so even well seasoned 3rdline engineers can use to even a technical projects engineer even have help for systems like akamai and have options to give step by step help as if someone is new to IT scaled up to someone that's been in IT for years and just need quick ref
--Manual adding options and also have a Client side so each client has their own systems KBAs for onboarding and for our support to ref their recorded systems and setups so if a support agent is off sick who normally deals with a client as example Knox pty ltd then another can go in their KBA system and see what they have which will be secure and safe and only editing option for projects, managers and specialist to update when changing anything and be a place someone can see what they have and what we have info on also note all system should have full auditing
--KBA's must also be able to be done by the client contact if they need or want to share new information with us as IT on 3rd parties etc.
+## What is already implemented
+- Core Node.js/Express backend with SQLite via Sequelize
+- Auth, user management and role-based permissions
+- Ticketing foundation with categories, priority, assignee, approvals and time tracking
+- Client records and client-user membership support
+- Dashboard and SLA metrics endpoints
+- Monitoring device health and heartbeat endpoints
+- Audit logging and failure logging
+- Static frontend shells for login, dashboard, client portal and admin AI settings
 
-AI Chat	
--AI must be completely fully working as a Halo IT chatbot customised and personalised for us but not limited to just prompts and replies in regards to our systems but be like a proper AI with media and picture upload option and have no size limit for our internal staff usage but secured so code and system cant be stolen or used malicious but allow me as super admin / business owner to use AI as I see fit with AI having full complete system wide overview of all and every feature except the vault obviously and for confidential files for security ofcourse
--AI must be able to edit from the inside anything of this entire system on my request only as security layer so I can ask it to tweak and edit anything of this system without breaking the main system (Like expansion basically and integrated to the Dev Console and terminal area)
--AI must also be available for clients but only as a search and help assistant resource not to the capabilities we use if they need devf or more features they need to pay and it needs to then be only able to use not replicate our system steal code or provide any information further than their own company and external sources like a google seach almost also. Size upload limit must apply also then
--Full chat history saved for each user but cleaned every 10 days to save space and also be compressed to best of saving space abilities to not clog and slow the system or overload with heavy space usage.
--Complete full working AI system using the deepseek v4 pro model deployed on our azure foundry space using endpoing key and api key integration and also have a option for me as super admin to change models incase one stops working but also have a backup AI system that is completely free and working like ollama or something and has no limits fo rour internal and clients usage but if just a visitor to use our AI it should limit not messages a day but rather amount of time used limit like each guest gets 5 hours of free AI usage limited to no indepth help or uploads very basic AI usage for quick help basically.
--If possible should have a self learning model so it builds and learns as it works and the learning should never clear stop working or delete data so we have a proper intelegent AI growing but is safe and secure
--Ai expansion capabilities aswell as adding any additional nice features possible.
+## What still needs to be completed
+The biggest remaining work is now the business-layer product buildout:
+- Knowledge base and client KB workflows
+- Invoicing, quoting and accounting
+- RMM, backup agents and monitoring automation
+- Learning centre and exam sponsorship workflows
+- Integrations centre
+- Security operations centre, vault and policy controls
+- App builder / DevConsole / rollout controls
+- Full AI provider integration beyond current settings stub
 
-RMM
--This is a big ask but needs to be done though, I need a full working and operational RMM system with quick support for a once off call coming in for assistance of clients or people needing just a quick assist to having installed .exe agents on both server and enduser machines to both monitor for health and security to support capabilities, Executing remote scripting to accessing the CMD and Poweshell of a machine its installed on. WIth uptime and file/folder access of the machine its installed on certified internally so windows and anti virus does not delete and see it as a safe secure RMM tool for our company to use with Halo IT services 365 branding
--Almost like a mix between intune/Nable/Lansweeper system and idea with also patch and update management (AI connected too for Halo IT staff who gets permissions to use and assist with tasks) 
--Should have a option to be able to deploy and provision similar to intune and have Microsoft and other such type integration options for SSO and intelegence and system connection
--Must be secure and safe via API and security token system and for clients must have a free tier system for basic tasks and fuctions to a top tier system that's fully paid that is used along SLAs and billed at amount of devices and or site size or capability selection of client or alternatively if need a custom built one tailored to needs have a request quote for personalized system option
--Linked to our own backup agent system which can be linked to any backup system with API's and integration options customised by AI also or coding or have general system options like VMware/Nable cove or local or manual cloud path like onedrive or mega for instance. 
-Part of RMM should have backup system capabilities and all RMM items linked to contracted clients should include monitoring linked to support dashboard and ticketing system to create alerts for both the agents working with that client or on the desk aswell as the assigned Client Engadgement Manager (A person assigned to a client amanging all their wants and needs almost like a personal banker and automated so when a client is onboarded and they get a CEM we call it that person is then intelegently assigned and gets alerts also this must also include projects sao if a new project is launched and a Projects manager is assigned that person gets alerts also to any tickets change requests or alerts assigned to the specific project gets alerts if RMM is also being used on the project this all must be open ended to be modified and changeable
-
-Invoices (all)
--Invoices to follow the attached PDF of Invoice005 for all invoice schemes/builds with our company logo (Which should be uploadable) and our company information as is in the example but client information should be able to be put in via selection of clients loaded into system or cash client and then manually having to complete fill in fields and selections like services rendered travel charge, time used, allowing admins and super admins with invoice editing permissions to edit rates and account side also for that invoice and bewing able to do invoices for separate tasks, Support invoice, project invoice, time billed invoice, goods/stock sales invoicing and all other basic to advanced invoicing features
--Invoicing must be AI compatable also so a person can ask AI to generate invoice from all invoice templates customised for custom situations however these top tier invoicing options only able to be done by those with permissions like billing/commercial/accouting staff and higher management/owners/ Agenst and techs not to do invoicing
--Options/changes button feature for these admins to be able to edit a invoice features in the event they need to add extra defined fields not there by template or be able to create a complete new invoice template but keep to format and branding of Halo it
--Invoice me option for both contract and non contract clients so as to ask for invoice if work is done and invoicing hasn't been done automatically
--Perfer to have invoicing automated also so if a ticket or job is closed and done it created a draft of invoice stored in a area or folder with list of invoices that creates the invoices to be done alert for admins and super admins with invoicining pewrmissions and like my super admin account and all features of each of these RMM, Invoicing tickets everything should also just as extra note have all in detail audit trails.
-
-Invoicing and quoting all linked to an accounts area or accounting area with possible future taxing options and vat options if need be in furture so basically our own provided branded accounting centre like a mini sage or Xero system but obviously only for us to use internally and also everything till this point needs to be secure
-
--Any additional or added on features invoicing needs that would be beneficial.
-
-Quotations
--This should follow same kind of idea and logic as invoicing however should also have a feature to clients both public and signed up clients both contract and non contract to request any quote needed for either products/software or services with a form to fill out or a AI generated form option if someone just wants to use a AI prompt but generate a form internal;ly for us from a template using also the invoice005 example PDF as an idea but quoting and all the accounting stuff must be as professional as possible and completely working and safe and secure so nothing can be stolen. 
--No pricing to be shown on website unless its generalised like as a example start with us from as little as R 200 pm for basic support to ultimate complete custom packages as we sell tailor made services and basic.
-
-Accounting option as pert of this accounts section for external accounting to be able to be done for 3rd party companies and auditing for tax and auditor so everytign is above bord and legally legit
-
-SLA	
--Sla support turn around time no longer than 24 to 48 hours tops on general support and more complex issues will be relayed on turn around time in the first 2 hours of logging a support ticket or query with AI being able to inspect and reply to clients email they leave advising them of the SLA turn around and then creating alerts and assignments on our side automatically to helkp with Q and priorities ofcourse contract clients always get higher priority than non contract unless hacked people or malicious or very serious type of issues come from non contract vs a contract client with just a small issue. AI to do all this automated.
--Also have client SLA packagesa up to 5 tier contracts as tempates for clients tier 1 being like a basic cheap inexpensive bronze package all the way to level 5 being like a Top highest Diamond tier and via internet searching being able to compile these from internet based on most used and needed services in the worlds statistics of what people want and then a 6th option for customised SLA agreements where a new or current client can prompt to us what they want and or need and AI creates a request on our side with suggestions as to tailor make a package all secure so outside companies don't steal ideas
-
-Clients	
--Should have their own permissions assign,ent options for us as admins to be able to assign so we can promote and demote site contacts as need be and have their own portal with the normal client fucntions
--Clients to have their own login each to thier own listing all their ticketsand devices assigned to their account so Jimm can only see Jimmy stuff unless otherwise specified by request or a share link to a certain ticket or request is done but Jimmy cant see and edit Jasons password, account, devices or tickets without Halo IT admins approval
--Security suggestions and other improvements IT wise to be provided in a non annoying way to all staff and users of clients each to thir own and their own environment and user accounts and TOPT forced setup for all after 5 first logins and a reset self service option with verification method and if device or auths not available a request access option to sent to upport for assistance to get back in and giving Ha;lo IT agents and staff option to assist giving access however only admins with permissions should be able to do this at will and super admins but agents only able to help with this if a support ticket in regards to access is logged to a person of the client in their name so a agent cant just give anyone anytime access .
--Authentication of identityto be done before access can be giving and confirmed and if suspect of identity a approval needs to be done by client contact to approve access to account.
-
-Shop
--Online shop to bebuild which is completely customizable via AI prompt or super admins or marketing/commercial department to add in manually catalogue for hardware/software and or services package to be sold and also a AI search in back end to be done automatically to all local to the clients location online stores to be done by ai to find products with different prices and options so if I ask on the shop I5 laptop questions in regards to use and avalability and budget and OAS etc must be asked and then go search on the internet via takealot/amazon/miustek and all other providers done and fetched and best top 3 options presented and differences between them and explain if prices differe 
--Shop otherwise must have dynamically updating view pages changing frequently between products offered and software and 3rdparty sales like Office/hardware specials in South africa or local to the client and or voip etc as main shop page with specials and limits and legal advertizing of specials we can make internally via AI for a week and then end special and then have set duration option toi change specials frequntly alsmot like a shop but fetching supplier prices without listing its on takealot or these providers but show us selling it and all pricing of shop items must have minimum 10% mark up unless AI feels there should be more becauise of higher complexity or rarity or shipping etc
--Online payment system must be avaiable but not just in shop I also want a payment system or options for services clients which to pay for online that I can link with my banking and or QR payinor any other payment methods I can use for free and setup aswell as a EFT payments setup I can do in back end to display info for clients wanting to do EFT
-
-Learn	
--Just one thing I want this to be a full training and learning system where each person internally an tudy and do test exms for official CompTIA or Microsoft or watchgaurd or such exams and crts and AI being able to generate a course custom to prompts answered aswell as provide embed links or yourtube videos or any other links and material for each person to use with progress tracking and reporting on their profiles so their line managers can see if training is done or not and it actually being auto updated with latest and this actually working (Obiously free material however there should be a option to link/setup paid study systems also if we were to buy like measure up and such as a fute optional feature
--Should also include study options for paths so if someone wants to go for azure architectthen a course route suggested and be able to be compiled by the AI system to provide.
--Booking of exams links possible for once a person finishes they can clink on book official exam and it takes them to the URL where you pay and book. Company sponsored exams possible once basic exams are all done in own capacity like MS900 entry exam if MS path is needed or wanted but also a sponsor me or apply for sponsorship option for agents so they can request us a s accompany to sponsor exams to be paid but pass is needed or repayment to Halo it is to be done as terms and a accept terms and contiditions tick with a readme terms legally binding and safe and legal for both employee and employer 
--All stats of all agents to be audit and statistic logged for admins and managers and super admins reviewing possible for KPI checks as well as a brag system so if someone passes exam they can upload a cpy of their pas mark or photo and a global wide email notification and halo it system notification is added to social alerts and channels to showcase someone a congrats on passing like the kudos system of hibob
-
-Users
--internal Halo it agents/staff user management system to manage users for onboarding restting of passowrds setting permisions for each and every feature so allow all according to their respective roles that we ad anagers and admins and super admins can assign or revoke 
--Linked to our own type of basic HR system where their info is saved but the HR system part only available to bosses/managers to degree of leave requests/sick note uploads and such but Business heads like me the owner can see banking info for salary and they can also see tha and all their info setups on the onboarding done aswell as them being able to edit this if need be and a place for performance reviews to be able to be done and KPI goals and outcomes but not forgetting Promotion requests and advancements in compny and salary increase option however salary incease option only available on passing a 85% score on KPI and legally stating that its still due to discretion of company and getting 85% does not guarantee increase
--Benefits and add ons company offer each user and being completely confidential and private and salary not shown there however but payslip a legal payslip being produced each month
--For owners their pay needs to be worked out however their entire pay and HR system must be customizable via AI requests or manual changes if wanted, SO we can state ownerA gets 20% and owner B gets 10% of total profits 
--HR area should also include all contracts of each to ttheir own profile so Jimmy can access his supporting documents and contracts and CV etc aswell as a exisiting recommendation letter to be generated produced by manager and owner together and pproval of HR (Super admins or business owners like myself has oversight of all) if a person wants to leave and join another company however this is generated in accordance to their service record, tickets successfully solved time spent on work items study completions and feedback from clients
--All agents staff and users even Us owners get feedback from cleints and colueages submitted tied to each of their owns profile as to review good or bad feedback and HR and manager and owners notified of either good or bad feedback this sorted by AI into sections and notified accordingly
-
-Integrations
--Integrations centre to be made to integrate anything and everyting as a possibility from Wordpress to deploy the website for this company of mine all the way through to GitHub repo link AI integrations API, Slack, Monday,freshworks,clockify, Sage pay, Xero and all other major ones. Zoho, Microsoft, intune, backup systems sharepoint, and AI option to add more automatically and AI helping to create and add in under the expansion centre or a feature centre of sorts where its added and linked tested and goes live.
--Voip systems, Pay systems the works but the integrations centr only available to selected people and roles strictly and onl my super/owner admin profile can execute and approve integrations and changes.
--Integrations where possible should not be limited just to API option but Admin login options too and the AI/integration side being able to make changes on behalf of the signed in person similar to when Microsoft asks to consent a app to making chnaes and xneelo to add in DNS records automatically or godaddy etc, Also have paid services integration options like mimecast, peasonvue, CompTIA pluralsight etc.
--Any other bonus adhoc integration features that could be useful and beneficial
-
-DevConsole
--Full working Dev console in all dev languages applicable to manageing changing and modifying this entire system via internal coding if need be and pushing chinges to live system but onl applicable to whom I choose and ofcourse to myself 
--AI being able to do development in code on this system and execute commands and changes on my say so and fully working on prompts so if I ask an you code in a change for theme of the system to black and red it does so automatically but also have a backup and roll back fature for anything that breaks. Having a checker to se incase something breaks or a keep changing option which needs to be clicked confirm change withint a 5 minute window after deployment in the event something breaksthe entire system the rollback will automatically happen to restore previous setup before changes executed
--DevConsole to also have a terminal Shell for just executing commands also in whatever language needed to run commands weathe node.js or just normal powershel commands
-
-Backup
--Backup system and features already defined in RMM section however backup centre must have any and all additional features you think suitable and handy to have that will work in our favour and also have a installable backup agent for any type os compatable with most majer OS systems as a trusted agent also as light weight as possible with acive monitoring included as part of system for backup failures
--Must be encrypted and safe and secure or atleast the transfer of data from and to device and endpoint maybe via free mini intrernal created VPN tunnel if possible or any other codded encryptiuon and decryption system
-
-Vault
--Complete working and safe secure password vault with full TOPT and muti MFA optional choice system with highest 256 possible encruption unlocked with password and mfa system each to their own account so if jimmy only has text mfa setup but Jill ha Authenticator and email ode then it applies. A wipe account / User saved data option for bruteforce or other hack attempts with a system breach notification for security to be sent to Security centre
--Other known maje vault systems must be able to link in either via web/app login options or API created options if setup by staff however personal vaults connected is completely provate and secure so Halo IT saystem wont be able to acces but this is to have available in one place then atleast
-
-Audit Log
--All actions of everything on this system happening from just a ticket opening right through to new features added to be logged under their respective category that AI thinks it should go or if unknown then goes to general category for unknown system logs
-
-Expansion Center
--One full expansion centre for us as Halo IT owners and super admins to expand to add more features if needed or anted with AI prompt to ask what to add if its not listed but to have majority of expansion features like Mobile android app wrapper for this system to access from phone if need be, Or to add features like local server hosting or cloudflare setyp or add new features as you seem fit for beneficial use and adding 
-
-App Builder
--App builder is to be our own little replit/app building system so we can use ai to build our own working and complete apps as we seem fit but also have a dev app build secondary section in the event that we want tomanually code and compile our own apps however the app builder must do the work of compiling and buil;ding the .exe or PWA or msi or whatever it needs for the need.
--Also have a upload files and folders section so we can build apps from already written files if need be like replit but with no limitations and comepletely for Halo use and all builds must have a signed signature from Halo it to enure apps are build as property of Halo it but this app builder is only available for those assigned as myself.
-All apps build weather it be a exe or just a basic app all must be build in a manner to respect security standards and working on systems its targeting without antivirus seeing as a virus using self security signed certificates and such (Note this also for anything and everything else int his entire system)
-
-Ads
--Ads centre for advertising and managing our Halo It company on all available free and or paid ad integrations like google ads or facebook market place etc and then using this single centre to push ads as user to those areas and if not possible then to link these as web pages here with saved login so manaable from here
--Secondary part neeedsa to include a monitizing ads option to make passive income eiher from hosting other companies ads in the world done on a back end to the internet where people sign up securely and use our systems to advertise and or pay us to do their marketing so this Ads centre should also be a full marketing entre complete with a photo editor and and such as best and free as possible
-
-Security
--Full proper security SOC centre monitoring for security threats and suggesting hardenings and where to improve and total secure score according to main world standards. Also inclusive of all other main security features like scaning for intrusions unauthorised logins failed logins, Data exposure, Weak points in our system, Network scanner tools and I possible a firewall integration option to monitor security but not breach or create a vulnerability.
--Our own basic security mini agent/aplet for most of the known security ieeues and risks and help identify malware or possible malware blocking ads by sing custom DNS or any other means of coding and options to secure as much as possible
--An other additional good working features but this needs proper and careful working systems as security is a majort risk these days with AI.
--AI linked to this is fine but data and information gathered must not leak so it needs to be locked down here where AI can view only in this system but can pars data out at all and all locks on this specific centre only this centre is made so AI can only help with the tasks here in this part but not take data out or modify or inject or be used against us. 
--If possible our own little VPN system to be made if not its fine just something cool enough to help against threats
--MFA/TOTP control centre and our own condityional access policies system that is fully secure tested and working and a pentest area/ security fature deployment test area
--A scanner to see any new apps and or features deploye is safe and secure
-
-Tools
--All possible IT tools like ping/ DNS checker and those ones the main ones used notepad++ or editors and or Ninite and other donloadable softwares to be able to be used. All tools here be according to permissions set and selected and also have ability to edit this area so we can add more of our own tools if we wanted but also needing to be eremely secure as possible.
--Public tools of basic stuff can be displayed to public such as adobe reader dc or Driver collection agent and device driver setup agent (Maybe have a device/driver creation ool custom to each owns devices that AI can make to pickup all missing drivers and install and if not because network driver is missing then it needs to be able to run offline and atleast list or mention what kind or make of driver is needed)
-
-VoIP
--Our own full free voip integration system using perhaps our teams licensing or any other free systems in the world but also giving paid options and sip trunk setup options 
--Anyadditional features and setup that can be used as I cant think of all that can be used right now but definitely we need a internal fee voip setup and system
-
-Lastly all off these centres needs to be interlinked with AI and a AI chat button ot respond button on each centre so AI can assist on all system except where otherwise specified
-On all features and centres all addional useful and beneficial features are to be added and all systems has to be live and not dummy ot mock sites or portals.
-entire system needs to be open ended to more and more expansion over time can happen and we want all this so we have one centralised system ad not have 50 million different trial and paid and free mixed tools.
-Oh and if possible add a trouble shooting centre or area under KBA system so we can troubleshoot any issue using AI in depth. 
-
-All features and systems are to be fully secure and where our own cant be created and implemented AI should atleast have a prompting and guidance steps system to help us setup a paid chosen or free system option and provide us with top 5 of each if selected and asked.
-
-Lastly a backup system for all these features and our Halo IT system is to be done so we can export the entire system and its code and setups and files to config files so if we need to redeploy r move the system to a hosted platform or from GitHub somehwre or such its easily done.
-
-Firewall capability and apps mst also be possible with setup guide and or help as much as possible free UTM type firewall and or paid versions of software firewalls aswell as if possible create our own internal mini home use firewall which is decent and uses maybe Sophos utm or ipcop as aexamples and framework to build a Halo IT one for now if not its cool
-
-Any features not created or build must be listed and mentioned why but if it can but needs dependencies still make the features as far as possible but with setup and dependencies setup and config options and AI help as far as possible
+## Delivery note
+The system is no longer a prototype-only scaffold. It is a real backend platform with core modules already wired, but the full Halo product suite still needs a second wave of implementation and UI integration.
