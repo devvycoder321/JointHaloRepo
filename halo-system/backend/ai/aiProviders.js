@@ -4,6 +4,26 @@ function safeJsonResponse(response) {
   return response.json().catch(() => ({ error: `Unable to parse response from provider (${response.status})` }));
 }
 
+function buildAzureChatUrl(endpoint, deployment, apiVersion) {
+  const baseEndpoint = String(endpoint || '').trim().replace(/\/$/, '');
+  const targetDeployment = String(deployment || '').trim();
+  const targetApiVersion = String(apiVersion || '2024-10-21').trim();
+
+  if (!baseEndpoint) {
+    return '';
+  }
+
+  if (/\/openai\/v1(?:\/)?$/i.test(baseEndpoint) || /\/openai\/v1\//i.test(baseEndpoint)) {
+    return `${baseEndpoint.replace(/\/$/, '')}/chat/completions?api-version=${targetApiVersion}`;
+  }
+
+  if (!targetDeployment) {
+    throw new Error('Azure deployment is not configured');
+  }
+
+  return `${baseEndpoint}/openai/deployments/${encodeURIComponent(targetDeployment)}/chat/completions?api-version=${targetApiVersion}`;
+}
+
 async function requestJson(url, options, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -46,7 +66,7 @@ const providers = {
       if (!endpoint || !apiKey || !deployment) {
         throw new Error('Azure configuration incomplete');
       }
-      const url = `${endpoint.replace(/\/$/, '')}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
+      const url = buildAzureChatUrl(endpoint, deployment, apiVersion);
       const messages = normalizeMessages(action, payload);
       const body = {
         messages,
@@ -200,5 +220,6 @@ async function sendAiAction(action, payload, config) {
 }
 
 module.exports = {
+  buildAzureChatUrl,
   sendAiAction,
 };

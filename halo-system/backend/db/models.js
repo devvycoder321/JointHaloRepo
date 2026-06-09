@@ -133,6 +133,35 @@ const BackupCode = sequelize.define('BackupCode', {
   },
 });
 
+const PasswordResetToken = sequelize.define('PasswordResetToken', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: User,
+      key: 'id',
+    },
+  },
+  token: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  expires_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  used: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+});
+
 // Audit log model
 const AuditLog = sequelize.define('AuditLog', {
   id: {
@@ -427,6 +456,9 @@ AuditLog.belongsTo(User, { foreignKey: 'user_id' });
 User.hasMany(BackupCode, { foreignKey: 'user_id' });
 BackupCode.belongsTo(User, { foreignKey: 'user_id' });
 
+User.hasMany(PasswordResetToken, { foreignKey: 'user_id' });
+PasswordResetToken.belongsTo(User, { foreignKey: 'user_id' });
+
 User.hasMany(Ticket, { foreignKey: 'created_by' });
 Ticket.belongsTo(User, { foreignKey: 'created_by' });
 Ticket.belongsTo(User, { as: 'assigned_agent', foreignKey: 'assigned_agent_id' });
@@ -467,6 +499,7 @@ module.exports = {
   RolePermission,
   AuditLog,
   BackupCode,
+  PasswordResetToken,
   Ticket,
   Client,
   ClientUser,

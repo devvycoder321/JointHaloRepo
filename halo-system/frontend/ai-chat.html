@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Halo AI Assistant</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; max-width: 900px; }
+      .panel { border: 1px solid #d9d9d9; padding: 16px; border-radius: 10px; }
+      textarea, input { width: 100%; padding: 10px; margin-top: 8px; }
+      button { margin-top: 12px; padding: 10px 14px; }
+      #chatOutput { white-space: pre-wrap; background: #f8f8f8; padding: 12px; border-radius: 8px; min-height: 200px; }
+    </style>
+  </head>
+  <body>
+    <h1>Halo AI Assistant</h1>
+    <p>Use this lightweight chat panel to test the live AI backend integration.</p>
+    <div class="panel">
+      <label for="prompt">Prompt</label>
+      <textarea id="prompt" rows="4" placeholder="Ask the AI anything about the Halo platform, tickets, support, or general help..."></textarea>
+      <button id="sendButton">Send</button>
+      <div id="status" style="margin-top: 8px;"></div>
+      <h3>Response</h3>
+      <div id="chatOutput">Waiting for your first prompt…</div>
+    </div>
+
+    <script>
+      const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : `${window.location.protocol}//${window.location.hostname}:3000`;
+
+      const sendButton = document.getElementById('sendButton');
+      const promptInput = document.getElementById('prompt');
+      const output = document.getElementById('chatOutput');
+      const status = document.getElementById('status');
+
+      sendButton.addEventListener('click', async () => {
+        const prompt = promptInput.value.trim();
+        if (!prompt) {
+          status.textContent = 'Please enter a prompt first.';
+          return;
+        }
+
+        status.textContent = 'Connecting to AI service…';
+        output.textContent = 'Thinking…';
+
+        try {
+          const response = await fetch(`${apiBaseUrl}/api/ai/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'AI request failed');
+          }
+          output.textContent = data.reply || 'No response received.';
+          status.textContent = `Provider: ${data.provider || 'unknown'}`;
+        } catch (error) {
+          output.textContent = 'AI request failed.';
+          status.textContent = error.message;
+        }
+      });
+    </script>
+  </body>
+</html>

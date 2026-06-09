@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/$USER/public_html/
+    - /bin/cp -R halo-system/backend/ $DEPLOYPATH/backend/
+    - /bin/cp -R halo-system/frontend/ $DEPLOYPATH/

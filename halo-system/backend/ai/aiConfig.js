@@ -5,6 +5,8 @@ const runtimeOverrides = {
     : ['openai', 'ollama', 'mock'],
   endpoint: process.env.AI_ENDPOINT || '',
   model: process.env.AI_MODEL || 'gpt-4o-mini',
+  deployment: process.env.AZURE_OPENAI_DEPLOYMENT || '',
+  apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-10-21',
   temperature: Number(process.env.AI_TEMPERATURE || 0.7),
   maxTokens: Number(process.env.AI_MAX_TOKENS || 1000),
   timeoutMs: Number(process.env.AI_TIMEOUT_MS || 30000),
@@ -16,14 +18,16 @@ function getProviderConfig() {
     fallbackProviders: runtimeOverrides.fallbackProviders,
     endpoint: runtimeOverrides.endpoint,
     model: runtimeOverrides.model,
+    deployment: runtimeOverrides.deployment,
+    apiVersion: runtimeOverrides.apiVersion,
     temperature: runtimeOverrides.temperature,
     maxTokens: runtimeOverrides.maxTokens,
     timeoutMs: runtimeOverrides.timeoutMs,
     azure: {
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT || '',
+      endpoint: runtimeOverrides.endpoint || process.env.AZURE_OPENAI_ENDPOINT || '',
       apiKey: process.env.AZURE_OPENAI_API_KEY || '',
-      deployment: process.env.AZURE_OPENAI_DEPLOYMENT || '',
-      apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-03-15-preview',
+      deployment: runtimeOverrides.deployment || process.env.AZURE_OPENAI_DEPLOYMENT || '',
+      apiVersion: runtimeOverrides.apiVersion || process.env.AZURE_OPENAI_API_VERSION || '2024-10-21',
     },
     openai: {
       apiUrl: process.env.OPENAI_API_URL || 'https://api.openai.com/v1',
@@ -50,6 +54,8 @@ function getPublicSettings() {
     fallbackProviders: config.fallbackProviders,
     endpoint: config.endpoint,
     model: config.model,
+    deployment: config.deployment,
+    apiVersion: config.apiVersion,
     temperature: config.temperature,
     maxTokens: config.maxTokens,
     timeoutMs: config.timeoutMs,
@@ -86,6 +92,12 @@ function updateSettings(updates = {}) {
   }
   if (typeof updates.model === 'string') {
     runtimeOverrides.model = updates.model;
+  }
+  if (typeof updates.deployment === 'string') {
+    runtimeOverrides.deployment = updates.deployment;
+  }
+  if (typeof updates.apiVersion === 'string') {
+    runtimeOverrides.apiVersion = updates.apiVersion;
   }
   if (typeof updates.temperature === 'number') {
     runtimeOverrides.temperature = updates.temperature;
