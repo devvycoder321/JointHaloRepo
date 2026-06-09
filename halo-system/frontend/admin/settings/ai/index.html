@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halo AI Settings</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; max-width: 900px; }
+    label { display: block; margin: 12px 0 4px; font-weight: bold; }
+    input, textarea, select { width: 100%; padding: 10px; font-size: 1rem; }
+    button { margin-top: 16px; padding: 12px 18px; font-size: 1rem; }
+    .note { margin-top: 12px; color: #555; }
+    .section { margin-bottom: 24px; border: 1px solid #ddd; padding: 16px; border-radius: 8px; background: #fbfbfb; }
+    .status { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>AI Settings</h1>
+  <p>Configure the AI abstraction layer. Secret keys are loaded from environment variables on the backend.</p>
+
+  <div class="section">
+    <label for="provider">Provider</label>
+    <select id="provider">
+      <option value="azure">Azure DeepSeek</option>
+      <option value="openai">OpenAI Compatible</option>
+      <option value="ollama">Ollama Local</option>
+      <option value="openrouter">OpenRouter</option>
+      <option value="custom">Custom OpenAI-Compatible</option>
+      <option value="mock">Mock / Disabled</option>
+    </select>
+
+    <label for="endpoint">Endpoint</label>
+    <input id="endpoint" type="text" placeholder="Optional custom endpoint" />
+
+    <label for="deployment">Deployment Name</label>
+    <input id="deployment" type="text" placeholder="Azure deployment name or model name" />
+
+    <label for="apiVersion">API Version</label>
+    <input id="apiVersion" type="text" placeholder="Azure API version (if using Azure)" />
+
+    <label for="model">Model Name</label>
+    <input id="model" type="text" placeholder="Model name" />
+
+    <label for="temperature">Temperature</label>
+    <input id="temperature" type="number" step="0.1" min="0" max="2" />
+
+    <label for="maxTokens">Max Tokens</label>
+    <input id="maxTokens" type="number" min="1" />
+
+    <label for="timeoutMs">Timeout (ms)</label>
+    <input id="timeoutMs" type="number" min="1000" />
+
+    <label for="fallbackProviders">Fallback Providers</label>
+    <input id="fallbackProviders" type="text" placeholder="openai,ollama,mock" />
+
+    <div class="note">
+      <strong>Note:</strong> API keys are loaded from environment variables and are not editable from this page.
+    </div>
+
+    <button id="saveButton">Save Settings</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="section" id="apiStatus"></div>
+
+  <p><a href="/">Return to Halo System</a></p>
+
+  <script>
+    function getApiBaseUrl() {
+      const host = window.location.hostname;
+      const proto = window.location.protocol;
+      const isCodespaces = /(?:\.app\.github\.dev|\.github\.dev)$/.test(host);
+
+      if (isCodespaces) {
+        return `${proto}//${host.replace(/-(?:5500|3000)(?=\.app\.github\.dev$|\.github\.dev$)/, '-3000')}`;
+      }
+
+      if (host === 'localhost' || host === '127.0.0.1') {
+        return `${proto}//localhost:3000`;
+      }
+
+      return `${proto}//${host}:3000`;
+    }
+
+    const apiBaseUrl = getApiBaseUrl();
+
+    async function loadSettings() {
+      const response = await fetch(`${apiBaseUrl}/api/ai/settings`);
+      const settings = await response.json();
+      document.getElementById('provider').value = settings.provider || 'azure';
+      document.getElementById('endpoint').value = settings.endpoint || '';
+      document.getElementById('deployment').value = settings.azure.deployment || '';
+      document.getElementById('apiVersion').value = settings.azure.apiVersion || '2024-03-15-preview';
+      document.getElementById('model').value = settings.model || '';
+      document.getElementById('temperature').value = settings.temperature;
+      document.getElementById('maxTokens').value = settings.maxTokens;
+      document.getElementById('timeoutMs').value = settings.timeoutMs;
+      document.getElementById('fallbackProviders').value = settings.fallbackProviders.join(',');
+
+      const details = [];
+      details.push(`<strong>Azure configured:</strong> ${settings.azure.hasKey ? 'yes' : 'no'}`);
+      details.push(`<strong>OpenAI configured:</strong> ${settings.openai.hasKey ? 'yes' : 'no'}`);
+      details.push(`<strong>OpenRouter configured:</strong> ${settings.openrouter.hasKey ? 'yes' : 'no'}`);
+      details.push(`<strong>Custom provider configured:</strong> ${settings.custom.hasKey ? 'yes' : 'no'}`);
+      details.push(`<strong>Ollama URL:</strong> ${settings.ollama.apiUrl}`);
+      document.getElementById('apiStatus').innerHTML = `<h2>Backend AI Settings</h2><p>${details.join('<br>')}</p>`;
+    }
+
+    async function saveSettings() {
+      const payload = {
+        provider: document.getElementById('provider').value,
+        endpoint: document.getElementById('endpoint').value,
+        model: document.getElementById('model').value,
+        temperature: Number(document.getElementById('temperature').value),
+        maxTokens: Number(document.getElementById('maxTokens').value),
+        timeoutMs: Number(document.getElementById('timeoutMs').value),
+        fallbackProviders: document.getElementById('fallbackProviders').value,
+      };
+      const response = await fetch(`${apiBaseUrl}/api/ai/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      document.getElementById('status').textContent = result.status === 'ok' ? 'Settings updated successfully.' : `Error: ${result.error}`;
+      if (result.status === 'ok') {
+        loadSettings();
+      }
+    }
+
+    document.getElementById('saveButton').addEventListener('click', saveSettings);
+    loadSettings().catch((error) => {
+      document.getElementById('apiStatus').textContent = 'Unable to load AI settings: ' + error.message;
+    });
+  </script>
+</body>
+</html>

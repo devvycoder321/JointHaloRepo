@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halo System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    section { margin-bottom: 24px; }
+    input { padding: 8px; font-size: 1rem; }
+    button { padding: 10px 14px; font-size: 1rem; margin-left: 8px; }
+    pre { background: #f5f5f5; border: 1px solid #ddd; padding: 12px; min-height: 48px; }
+    ul { list-style: none; padding-left: 0; }
+    li { background: #fafafa; border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; }
+    .error { color: #b00; }
+  </style>
+</head>
+<body>
+  <h1>Halo System</h1>
+  <p><a href="/admin/settings/ai/">AI Settings</a></p>
+
+  <section>
+    <h2>AI Chat</h2>
+    <input id="promptInput" type="text" placeholder="Ask Halo AI..." style="width: 60%;" />
+    <button id="askButton">Send</button>
+    <p><strong>Response:</strong></p>
+    <pre id="aiResponse">No response yet.</pre>
+  </section>
+
+  <section>
+    <h2>Create Ticket</h2>
+    <input id="ticketInput" type="text" placeholder="Ticket title..." style="width: 60%;" />
+    <button id="createTicketButton">Create Ticket</button>
+    <p id="ticketMessage"></p>
+  </section>
+
+  <section>
+    <h2>Tickets</h2>
+    <ul id="ticketsList"></ul>
+  </section>
+
+  <script>
+    const apiBaseUrl = getApiBaseUrl();
+
+    function getApiBaseUrl() {
+      const host = window.location.hostname;
+      const proto = window.location.protocol;
+      const isCodespaces = /(?:\.app\.github\.dev|\.github\.dev)$/.test(host);
+
+      if (isCodespaces) {
+        return `${proto}//${host.replace(/-(?:5500|3000)(?=\.app\.github\.dev$|\.github\.dev$)/, '-3000')}`;
+      }
+
+      if (host === 'localhost' || host === '127.0.0.1') {
+        return `${proto}//localhost:3000`;
+      }
+
+      return `${proto}//${host}:3000`;
+    }
+
+    async function request(path, options = {}) {
+      const response = await fetch(`${apiBaseUrl}${path}`, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+      });
+
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(body.error || `HTTP ${response.status}`);
+      }
+
+      return body;
+    }
+
+    async function askAi() {
+      const prompt = document.getElementById('promptInput').value.trim();
+      if (!prompt) {
+        updateAiResponse('Please enter a prompt first.', true);
+        return;
+      }
+
+      try {
+        const data = await request('/ai', {
+          method: 'POST',
+          body: JSON.stringify({ prompt }),
+        });
+        updateAiResponse(data.reply);
+      } catch (error) {
+        updateAiResponse(error.message, true);
+      }
+    }
+
+    async function createTicket() {
+      const title = document.getElementById('ticketInput').value.trim();
+      const messageNode = document.getElementById('ticketMessage');
+      messageNode.textContent = '';
+
+      if (!title) {
+        messageNode.textContent = 'Please enter a ticket title.';
+        messageNode.className = 'error';
+        return;
+      }
+
+      try {
+        await request('/tickets', {
+          method: 'POST',
+          body: JSON.stringify({ title }),
+        });
+        document.getElementById('ticketInput').value = '';
+        messageNode.textContent = 'Ticket created successfully.';
+        messageNode.className = '';
+        loadTickets();
+      } catch (error) {
+        messageNode.textContent = error.message;
+        messageNode.className = 'error';
+      }
+    }
+
+    async function loadTickets() {
+      try {
+        const tickets = await request('/tickets');
+        renderTickets(tickets);
+      } catch (error) {
+        renderTickets([]);
+        const ticketsList = document.getElementById('ticketsList');
+        ticketsList.innerHTML = `<li class="error">Unable to load tickets: ${error.message}</li>`;
+      }
+    }
+
+    function renderTickets(tickets) {
+      const list = document.getElementById('ticketsList');
+      if (!tickets || tickets.length === 0) {
+        list.innerHTML = '<li>No tickets yet.</li>';
+        return;
+      }
+
+      list.innerHTML = tickets
+        .map(
+          (ticket) =>
+            `<li><strong>#${ticket.id}</strong> ${escapeHtml(ticket.title)}<br /><small>${new Date(ticket.createdAt).toLocaleString()}</small></li>`
+        )
+        .join('');
+    }
+
+    function updateAiResponse(message, isError = false) {
+      const responseNode = document.getElementById('aiResponse');
+      responseNode.textContent = message;
+      responseNode.style.color = isError ? '#b00' : '#000';
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/[&<>"]+/g, (match) => {
+        const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+        return escape[match];
+      });
+    }
+
+    document.getElementById('askButton').addEventListener('click', askAi);
+    document.getElementById('createTicketButton').addEventListener('click', createTicket);
+    window.addEventListener('load', loadTickets);
+  </script>
+</body>
+</html>
