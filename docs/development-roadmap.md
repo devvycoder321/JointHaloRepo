@@ -44,6 +44,9 @@ Goals:
 - Introduce clients, contacts, and client-specific access.
 - Support onboarding, offboarding, and client portals.
 
+Status:
+- In progress: client portal API and membership support are under development.
+
 Deliverables:
 - Client profile management.
 - Client contacts and roles.

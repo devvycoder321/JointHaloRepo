@@ -82,7 +82,7 @@ const User = sequelize.define('User', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Roles',
+      model: Role,
       key: 'id',
     },
   },
@@ -119,7 +119,7 @@ const BackupCode = sequelize.define('BackupCode', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },
@@ -144,7 +144,7 @@ const AuditLog = sequelize.define('AuditLog', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },
@@ -219,7 +219,7 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Clients',
+      model: 'clients',
       key: 'id',
     },
   },
@@ -227,7 +227,7 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },
@@ -251,7 +251,7 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },
@@ -259,11 +259,19 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },
   sla_due_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  first_response_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  resolved_at: {
     type: DataTypes.DATE,
     allowNull: true,
   },
@@ -308,7 +316,7 @@ const ClientUser = sequelize.define('ClientUser', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Clients',
+      model: Client,
       key: 'id',
     },
   },
@@ -316,7 +324,7 @@ const ClientUser = sequelize.define('ClientUser', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },
@@ -336,7 +344,7 @@ const TicketTimeEntry = sequelize.define('TicketTimeEntry', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Tickets',
+      model: Ticket,
       key: 'id',
     },
   },
@@ -344,7 +352,7 @@ const TicketTimeEntry = sequelize.define('TicketTimeEntry', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },
@@ -376,7 +384,7 @@ const TicketApproval = sequelize.define('TicketApproval', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Tickets',
+      model: Ticket,
       key: 'id',
     },
   },
@@ -384,7 +392,7 @@ const TicketApproval = sequelize.define('TicketApproval', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id',
     },
   },

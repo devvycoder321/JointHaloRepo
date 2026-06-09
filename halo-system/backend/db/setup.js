@@ -112,7 +112,7 @@ const initializeDatabase = async () => {
     }
     console.log('✅ Role-Permission associations seeded');
 
-    // Create demo super admin user if not exists
+    // Create demo super admin user if not exists, or repair missing role assignment
     const existingAdmin = await User.findOne({ where: { email: 'admin@halo.local' } });
     if (!existingAdmin) {
       const adminUser = new User({
@@ -125,7 +125,13 @@ const initializeDatabase = async () => {
       await adminUser.save();
       console.log('✅ Demo admin user created: admin@halo.local / SecureAdmin123!');
     } else {
-      console.log('✅ Demo admin user already exists');
+      if (!existingAdmin.role_id) {
+        existingAdmin.role_id = superAdminRole.id;
+        await existingAdmin.save();
+        console.log('✅ Demo admin user repaired with super_admin role assignment');
+      } else {
+        console.log('✅ Demo admin user already exists');
+      }
     }
 
     console.log('\n✨ Database initialization complete!');

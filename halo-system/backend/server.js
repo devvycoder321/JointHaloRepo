@@ -17,6 +17,8 @@ const auditRoutes = require('./routes/audit');
 const dashboardRoutes = require('./routes/dashboard');
 const ticketRoutes = require('./routes/tickets');
 const clientRoutes = require('./routes/clients');
+const slaRoutes = require('./routes/sla');
+const clientPortalRoutes = require('./routes/clientPortal');
 
 // Import AI service (existing)
 const { handleAiAction, getAiSettings, updateAiSettings } = require('./ai/aiService');
@@ -48,11 +50,30 @@ app.get('/', (req, res) => {
   });
 });
 
+// Clean up any leftover SQLite backup tables from previous alter operations
+const dropStaleBackupTables = async () => {
+  if (sequelize.getDialect() === 'sqlite') {
+    const [tables] = await sequelize.query(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%_backup'"
+    );
+    for (const table of tables) {
+      if (table.name) {
+        await sequelize.query(`DROP TABLE IF EXISTS \`${table.name}\``);
+        console.log(`✅ Dropped stale backup table: ${table.name}`);
+      }
+    }
+  }
+};
+
 // Database initialization and server startup
 const startServer = async () => {
   try {
-    // Sync database and apply schema updates for Phase 2
-    await sequelize.sync({ alter: true, force: false });
+    // Clean up stale SQLite backup tables before syncing the schema
+    await dropStaleBackupTables();
+
+    // Sync database without altering existing SQLite schema at runtime.
+    // Schema migrations should be handled explicitly via db/setup.js.
+    await sequelize.sync({ alter: false, force: false });
     console.log('✅ Database synchronized');
 
     // Mount authentication routes
@@ -63,6 +84,8 @@ const startServer = async () => {
     app.use('/api/dashboard', dashboardRoutes);
     app.use('/api/tickets', ticketRoutes);
     app.use('/api/clients', clientRoutes);
+    app.use('/api/sla', slaRoutes);
+    app.use('/api/portal', clientPortalRoutes);
 
     // AI Settings routes
     app.get('/api/ai/settings', optionalAuth, (req, res) => {

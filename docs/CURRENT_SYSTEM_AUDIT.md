@@ -3,7 +3,7 @@
 ## Overview
 This audit covers the current `halo-system` implementation in the repository.
 
-> Update: The live backend now includes a real Phase 1 implementation with Sequelize/SQLite persistence, JWT auth, MFA, RBAC, audit logging, and API routes for auth, users, audit logs, dashboard, and AI.
+> Update: The live backend now includes a real Phase 1 implementation with Sequelize/SQLite persistence, JWT auth, MFA, RBAC, audit logging, client and ticket support, and a new SLA foundation. Phase 3 client portal API support is being started.
 
 The current project is a secure core platform that has already advanced beyond the original starter skeleton.
 

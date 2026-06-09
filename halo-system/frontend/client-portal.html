@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halo Client Portal</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f6fb;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .header {
+      background: #3b82f6;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #111827;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .list-item {
+      padding: 15px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .list-item strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { opacity: 0.95; }
+    .logout {
+      float: right;
+      background: #ef4444;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    .message.success { background: #dcfce7; color: #166534; }
+    .message.error { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Halo Client Portal</h1>
+    <button class="logout" onclick="handleLogout()">Logout</button>
+    <p id="userInfo">Loading your client account...</p>
+  </div>
+  <div class="container">
+    <div id="portalMessage" class="message"></div>
+
+    <div class="card">
+      <div class="section-title">Client Profile</div>
+      <div id="clientProfile">Loading...</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Your Tickets</div>
+      <div id="ticketList">Loading tickets...</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Create New Ticket</div>
+      <div class="form-group">
+        <label for="newTitle">Title</label>
+        <input id="newTitle" type="text" placeholder="Ticket title" style="width:100%; padding:10px; margin-bottom:10px;" />
+      </div>
+      <div class="form-group">
+        <label for="newDescription">Description</label>
+        <textarea id="newDescription" rows="4" placeholder="Describe your issue" style="width:100%; padding:10px; margin-bottom:10px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="newClient">Client</label>
+        <select id="newClient" style="width:100%; padding:10px; margin-bottom:10px;"></select>
+      </div>
+      <button onclick="createPortalTicket()">Create Ticket</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = window.location.origin.includes('localhost') ? 'http://localhost:3000' : window.location.origin;
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = '/login.html';
+    }
+
+    async function apiCall(endpoint, options = {}) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          ...options.headers,
+        },
+        ...options,
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+        return null;
+      }
+
+      return response.json();
+    }
+
+    async function loadPortal() {
+      try {
+        const profile = await apiCall('/api/portal/profile');
+        if (!profile || !profile.success) {
+          showMessage('portalMessage', profile?.error || 'Unable to load profile', 'error');
+          return;
+        }
+
+        document.getElementById('userInfo').textContent = `${profile.user.display_name} (${profile.user.email})`;
+        const profileHtml = profile.clients
+          .map(client => `<div class="list-item"><strong>${client.name}</strong>Tier: ${client.sla_tier}<br/>Reference: ${client.reference_code || 'N/A'}</div>`)
+          .join('');
+        document.getElementById('clientProfile').innerHTML = profileHtml || '<div class="empty-state">No client profile available.</div>';
+
+        const clientSelect = document.getElementById('newClient');
+        clientSelect.innerHTML = profile.clients
+          .map(client => `<option value="${client.id}">${client.name}</option>`)
+          .join('');
+
+        loadPortalTickets();
+      } catch (error) {
+        showMessage('portalMessage', error.message, 'error');
+      }
+    }
+
+    async function loadPortalTickets() {
+      const data = await apiCall('/api/portal/tickets');
+      if (!data || !data.success) {
+        showMessage('portalMessage', data?.error || 'Unable to load tickets', 'error');
+        return;
+      }
+
+      if (data.tickets.length === 0) {
+        document.getElementById('ticketList').innerHTML = '<div class="empty-state">No client tickets found.</div>';
+        return;
+      }
+
+      document.getElementById('ticketList').innerHTML = data.tickets
+        .map(ticket => `
+          <div class="list-item">
+            <strong>#${ticket.id} ${ticket.title}</strong>
+            <div>Status: ${ticket.status}</div>
+            <div>Priority: ${ticket.priority}</div>
+            <div>Type: ${ticket.type}</div>
+            <div>Client: ${ticket.Client?.name || 'N/A'}</div>
+          </div>
+        `)
+        .join('');
+    }
+
+    async function createPortalTicket() {
+      const title = document.getElementById('newTitle').value.trim();
+      const description = document.getElementById('newDescription').value.trim();
+      const clientId = document.getElementById('newClient').value;
+
+      if (!title || !clientId) {
+        showMessage('portalMessage', 'Please provide a title and select a client', 'error');
+        return;
+      }
+
+      const payload = { title, description, client_id: Number(clientId) };
+      const result = await apiCall('/api/portal/tickets', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+
+      if (!result || !result.success) {
+        showMessage('portalMessage', result?.error || 'Unable to create ticket', 'error');
+        return;
+      }
+
+      showMessage('portalMessage', 'Ticket created successfully', 'success');
+      document.getElementById('newTitle').value = '';
+      document.getElementById('newDescription').value = '';
+      loadPortalTickets();
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+    }
+
+    function showMessage(id, message, type) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.className = `message ${type}`;
+      el.style.display = 'block';
+    }
+
+    loadPortal();
+  </script>
+</body>
+</html>

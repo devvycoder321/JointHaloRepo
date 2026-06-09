@@ -114,7 +114,8 @@ const authService = {
     }
 
     // Extract permission names
-    const permissions = user.Role?.Permissions?.map((p) => p.name) || [];
+    const basePermissions = user.Role?.Permissions?.map((p) => p.name) || [];
+    const permissions = user.Role?.name === 'super_admin' ? ['*'] : basePermissions;
 
     return {
       id: user.id,

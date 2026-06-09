@@ -23,11 +23,12 @@
 | Persistent database | Core Platform | Planned | Required for production data.
 | Authentication | Security | Planned | No auth exists.
 | Permissions / RBAC | Security | Planned | No permission system exists.
-| Client portal | Clients | Planned | Missing client portal and contacts.
+| Client portal | Clients | In Progress | Client portal API support and membership-based ticket access started.
 | Client management | Clients | Planned | No client entity support.
 | Ticket lifecycle | Ticketing | Planned | Open/in-progress/closed states missing.
 | Ticket approvals | Ticketing | Planned | No approval workflow.
 | Ticket audit trail | Ticketing | Planned | No ticket audit logging.
+| SLA engine | Ticketing | In Progress | Basic SLA due date, breach detection, and summary endpoints added.
 | Quotes | Invoicing | Planned | No quote module.
 | Invoices | Invoicing | Planned | No invoice module.
 | Knowledge Base | Knowledge Base | Planned | No KB module.

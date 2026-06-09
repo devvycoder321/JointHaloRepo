@@ -3,6 +3,7 @@ const { body, param, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const router = express.Router();
 const auditService = require('../services/audit');
+const SlaService = require('../services/sla');
 const { authenticate } = require('../middleware/auth');
 const { requirePermission } = require('../middleware/rbac');
 const {
@@ -83,12 +84,18 @@ router.post(
         subcategory,
       } = req.body;
 
+      let client = null;
       if (client_id) {
-        const client = await Client.findByPk(client_id);
+        client = await Client.findByPk(client_id);
         if (!client) {
           return res.status(404).json({ error: 'Client not found' });
         }
       }
+
+      const sla_due_at = await SlaService.computeTicketSlaDueDate(
+        { created_at: new Date() },
+        client
+      );
 
       const ticket = await Ticket.create({
         title,
@@ -102,6 +109,7 @@ router.post(
         approval_status: type === 'change_request' ? 'pending' : 'approved',
         category: category || null,
         subcategory: subcategory || null,
+        sla_due_at,
         created_by: req.user.id,
         updated_by: req.user.id,
       });
@@ -214,12 +222,14 @@ router.put(
         type,
       } = req.body;
 
+      let client = null;
       if (client_id) {
-        const client = await Client.findByPk(client_id);
+        client = await Client.findByPk(client_id);
         if (!client) {
           return res.status(404).json({ error: 'Client not found' });
         }
         ticket.client_id = client_id;
+        ticket.sla_due_at = await SlaService.computeTicketSlaDueDate(ticket, client);
       }
 
       if (title) ticket.title = title;
@@ -244,6 +254,15 @@ router.put(
             error: 'Ticket cannot be closed without time tracked or closure justification',
           });
         }
+
+        if (['in_progress', 'pending'].includes(status) && !ticket.first_response_at) {
+          ticket.first_response_at = new Date();
+        }
+
+        if (['resolved', 'closed'].includes(status) && !ticket.resolved_at) {
+          ticket.resolved_at = new Date();
+        }
+
         ticket.status = status;
       }
 
