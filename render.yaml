@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: haloit-api
+    env: docker
+    dockerfilePath: ai_connector/Github-Connector/artifacts/api-server/Dockerfile
+    branch: main
+    plan: free
