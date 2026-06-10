@@ -1,0 +1,55 @@
+name: Halo AI — Deploy Frontend to Xneelo (FTP)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "artifacts/halo-ai/**"
+      - "lib/api-client-react/**"
+      - "lib/api-spec/**"
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Build Vite app and FTP to Xneelo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build API client
+        run: pnpm run typecheck:libs
+
+      - name: Build frontend
+        run: pnpm --filter @workspace/halo-ai run build
+        env:
+          PORT: "3000"
+          BASE_PATH: "/"
+          NODE_ENV: production
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Deploy via FTP to Xneelo
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./artifacts/halo-ai/dist/public/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          dangerous-clean-slate: false
+          log-level: standard
