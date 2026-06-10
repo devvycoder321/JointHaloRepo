@@ -1,3 +1,26 @@
+version: "3.8"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ai_connector/Github-Connector/artifacts/api-server/Dockerfile
+    image: haloit-api:local
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - AI_INTEGRATIONS_OPENAI_API_KEY=${AI_INTEGRATIONS_OPENAI_API_KEY}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ai_connector/Github-Connector/artifacts/halo-ai
+      dockerfile: Dockerfile
+    image: haloit-frontend:local
+    ports:
+      - "3000:80"
 version: '3.8'
 services:
   halo:
