@@ -78,6 +78,35 @@ Before deleting anything, ask: "Is this in the protected list?"
 - `lib/db/` - Shared database schemas
 - All files in `/docs/setup/` once created
 - `.git`, `.gitignore`, `.github/` - Version control
+- `docker-compose.yml`, `render.yaml`, `Dockerfile` files for each system
+
+---
+
+## ⚙️ AI + MSP SYSTEM OVERVIEW FOR AGENTS
+This repository must be understood as two separate but related systems:
+
+1. **AI System**
+   - Located in `ai_connector/Github-Connector/`
+   - Independent backend and deployment
+   - Built and packaged separately from the MSP platform
+   - Intended for AI-powered automation, search, and assistant features
+
+2. **Halo MSP System**
+   - Located in `halo-system/`
+   - Contains the public website, staff dashboard, client portal, monitoring, and ticketing
+   - Uses `halo-system/backend/` for Express API and `halo-system/frontend/` for web UI
+   - Authenticated portal pages use `/dashboard/index.html` and `/client-portal/index.html`
+
+**Important:** AI-related code and infra should never be merged into the `halo-system/` directory unless explicitly required by a cross-system integration task.
+
+---
+
+## 📌 How this works
+- `halo-system/` is the MSP business product.
+- `ai_connector/` is the standalone AI service.
+- Local dev may use `docker-compose.yml` to start both systems.
+- Production deploys each system separately.
+- When updating the website, do not modify AI system manifests unless the change is clearly part of an AI feature.
 - `docker-compose.yml`, `Dockerfile`, `render.yaml` - Deployment configs
 - `package.json`, `pnpm-lock.yaml` - Dependencies
 

@@ -16,5 +16,8 @@ RUN pnpm --filter @workspace/api-server run build
 # Expose port (the app listens on PORT env)
 EXPOSE 8080
 
+# Run from the API server workspace
+WORKDIR /usr/src/app/artifacts/api-server
+
 # Default command: run built server
 CMD ["node", "./dist/index.mjs"]

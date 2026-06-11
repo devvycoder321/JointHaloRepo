@@ -324,7 +324,7 @@
 
         UIUtils.showToast('Welcome back! Redirecting...', 'success', 1500);
         setTimeout(() => {
-          window.location.href = '/dashboard.html';
+          window.location.href = authManager.isClient() ? '/client-portal/index.html' : '/dashboard/index.html';
         }, 1000);
       } catch (error) {
         UIUtils.showToast(
@@ -384,7 +384,7 @@
 
         UIUtils.showToast('Account created successfully!', 'success', 1500);
         setTimeout(() => {
-          window.location.href = '/client-portal.html';
+          window.location.href = '/client-portal/index.html';
         }, 1000);
       } catch (error) {
         UIUtils.showToast(
@@ -425,7 +425,7 @@
     // Redirect if already logged in
     document.addEventListener('DOMContentLoaded', () => {
       if (authManager.isLoggedIn()) {
-        window.location.href = authManager.isClient() ? '/client-portal.html' : '/dashboard.html';
+        window.location.href = authManager.isClient() ? '/client-portal/index.html' : '/dashboard/index.html';
       }
     });
   </script>

@@ -52,11 +52,11 @@ services:
     container_name: ai-system-backend
     ports:
       - "8080:8080"
-    volumes:
-      # Mount AI system workspace for development
-      - ./ai_connector/Github-Connector:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.pnpm-store
+    # NOTE: The AI backend is a separate system from halo-system.
+    # It is built inside the container from the ai_connector/Github-Connector artifact
+    # path. We must not mount the local workspace over /usr/src/app here because
+    # that would hide the built output (including dist/index.mjs) produced by the
+    # Dockerfile, causing startup failures.
     environment:
       - PORT=8080
       - NODE_ENV=development

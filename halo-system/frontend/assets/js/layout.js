@@ -78,7 +78,7 @@ class HaloLayout {
     // Staff Dashboard navigation
     else if (this.isAuthenticated && this.currentPage === 'dashboard') {
       navHtml += `
-        <a href="/dashboard.html" class="active">Dashboard</a>
+        <a href="/dashboard/index.html" class="active">Dashboard</a>
         <span class="navbar-spacer"></span>
         <span class="text-secondary" id="staffUserName">User</span>
         <button class="text-secondary btn-sm" onclick="haloLayout.handleLogout()">Logout</button>

@@ -97,7 +97,7 @@
         if (result.success) {
           showMessage('MFA verification successful. Redirecting...', false);
           setTimeout(() => {
-            window.location.href = '/dashboard.html';
+            window.location.href = result.user?.role === 'client' ? '/client-portal/index.html' : '/dashboard/index.html';
           }, 1200);
           return;
         }

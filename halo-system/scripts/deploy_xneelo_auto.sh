@@ -4,11 +4,16 @@ set -euo pipefail
 
 # Frontend upload to Xneelo FTP.
 # Xneelo is static website hosting only. Backend apps should deploy to Railway or another Node host.
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -z "$repo_root" ]; then
+  repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd)"
+fi
+
 FTP_HOST="${FTP_HOST:-ftp.haloitservices365.co.za}"
 FTP_USER="${FTP_USER:-haloirskxm}"
 FTP_PASS="${FTP_PASS:-}"
 FTP_REMOTE_FRONTEND_DIR="${FTP_REMOTE_FRONTEND_DIR:-public_html}"
-FRONTEND_DIR="${FRONTEND_DIR:-/workspaces/Haloitservices365/halo-system/frontend}"
+FRONTEND_DIR="${FRONTEND_DIR:-$repo_root/halo-system/frontend}"
 
 if [ -z "$FTP_PASS" ]; then
   read -sp "Enter FTP password for ${FTP_USER}@${FTP_HOST}: " FTP_PASS

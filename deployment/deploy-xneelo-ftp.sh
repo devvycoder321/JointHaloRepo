@@ -103,29 +103,20 @@ echo -e "${GREEN}✓ Deployment package prepared: $DEPLOY_TEMP/frontend${NC}\n"
 
 echo -e "${YELLOW}📡 Uploading via FTP${NC}\n"
 
-# Create FTP batch file
-FTP_BATCH="/tmp/ftp-commands-$(date +%s).txt"
-cat > "$FTP_BATCH" << EOF
-open $XNEELO_FTP_HOST
-$XNEELO_FTP_USER
-$XNEELO_FTP_PASS
-ascii
-cd $XNEELO_FTP_DIR
-prompt off
-mput $DEPLOY_TEMP/frontend/*
-quit
+if ! command -v lftp >/dev/null 2>&1; then
+  echo -e "${RED}❌ lftp not installed. Install it with: sudo apt-get install lftp -y${NC}"
+  rm -rf "$DEPLOY_TEMP"
+  exit 1
+fi
+
+echo "Connecting to $XNEELO_FTP_HOST..."
+lftp -u "$XNEELO_FTP_USER","$XNEELO_FTP_PASS" "$XNEELO_FTP_HOST" <<EOF
+set ftp:ssl-allow no
+mirror -R --delete --verbose --no-symlinks "$DEPLOY_TEMP/frontend" "$XNEELO_FTP_DIR"
+bye
 EOF
 
-# Execute FTP upload
-echo "Connecting to $XNEELO_FTP_HOST..."
-if ftp -n < "$FTP_BATCH"; then
-    echo -e "${GREEN}✓ FTP upload completed${NC}\n"
-else
-    echo -e "${RED}❌ FTP upload failed${NC}"
-    rm -f "$FTP_BATCH"
-    rm -rf "$DEPLOY_TEMP"
-    exit 1
-fi
+echo -e "${GREEN}✓ FTP upload completed${NC}\n"
 
 # ═══════════════════════════════════════════════════════════════
 # VERIFICATION
