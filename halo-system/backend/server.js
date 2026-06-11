@@ -65,6 +65,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Fallback health check for external probes that use /api/healthz
+app.get('/api/healthz', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Halo Backend Running - Phase 1 Core Platform',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Clean up any leftover SQLite backup tables from previous alter operations
 const dropStaleBackupTables = async () => {
   if (sequelize.getDialect() === 'sqlite') {
