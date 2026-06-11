@@ -2,8 +2,8 @@ version: '3.8'
 
 # JointHaloRepo Docker Compose Configuration
 # Orchestrates TWO independent systems:
-# 1. MSP Business System (halo-system/)
-# 2. Standalone AI System (ai_connector/)
+# 1. MSP Business System (halo-system/) - Main MSP platform
+# 2. Standalone AI System (ai_connector/) - AI agent automation
 
 services:
   # ═══════════════════════════════════════════════════════════════
@@ -18,8 +18,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./halo-system/backend:/app
-      - /app/node_modules
+      # Mount both backend and frontend for dev hot-reload
+      - ./halo-system/backend:/halo-system/backend
+      - ./halo-system/frontend:/halo-system/frontend
+      - /halo-system/backend/node_modules
     environment:
       - NODE_ENV=development
       - PORT=3000
@@ -27,32 +29,20 @@ services:
       - SESSION_SECRET=${SESSION_SECRET:-dev-secret-min-32-chars-required}
       - JWT_SECRET=${JWT_SECRET:-dev-jwt-min-32-chars-required}
       - AI_INTEGRATIONS_OPENAI_API_KEY=${AI_INTEGRATIONS_OPENAI_API_KEY:-}
+      - CORS_ORIGIN=http://localhost:3000
     restart: unless-stopped
     networks:
       - haloit-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  msp-frontend:
-    build:
-      context: halo-system/frontend
-      dockerfile: Dockerfile
-    container_name: haloitservices-frontend
-    ports:
-      - "3001:80"
-    depends_on:
-      - msp-backend
-    networks:
-      - haloit-network
-    environment:
-      - REACT_APP_API_URL=http://localhost:3000
-
   # ═══════════════════════════════════════════════════════════════
   # STANDALONE AI SYSTEM - Autonomous AI Agent Framework
+  # Separate backend for AI automation and management
   # ═══════════════════════════════════════════════════════════════
   
   ai-backend:
@@ -62,6 +52,11 @@ services:
     container_name: ai-system-backend
     ports:
       - "8080:8080"
+    volumes:
+      # Mount AI system workspace for development
+      - ./ai_connector/Github-Connector:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/.pnpm-store
     environment:
       - PORT=8080
       - NODE_ENV=development
@@ -72,25 +67,11 @@ services:
     networks:
       - haloit-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  ai-frontend:
-    build:
-      context: ai_connector/Github-Connector/artifacts/halo-ai
-      dockerfile: Dockerfile
-    container_name: ai-system-frontend
-    ports:
-      - "8000:80"
-    depends_on:
-      - ai-backend
-    networks:
-      - haloit-network
-    environment:
-      - REACT_APP_API_URL=http://localhost:8080
 
 networks:
   haloit-network:

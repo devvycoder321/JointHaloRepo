@@ -11,7 +11,7 @@ The project has moved from a prototype into a real platform foundation. The majo
 - Monitoring and audit logging
 - MFA backend support
 
-## Main gaps to the full Halo vision
+## Main gaps to the full Halo vision - this is the Halo-system/workspaces/JointHaloRepo/halo-system
 ### 1. Knowledge base and content operations
 Gap: no article lifecycle, search, tagging or client-scoped KB experience.
 Need: content model, editor UI, permissions, search and audit.
@@ -56,4 +56,5 @@ Need: screen-by-screen implementation for dashboard, tickets, clients, KB, invoi
 - Introduce KB and quote/invoice data models.
 - Add a first RMM device register/heartbeat flow.
 - Add AI provider integration and a secure chat history model.
+Ai connector has its own system which is a subsystem app as a seperate system howver its part of same backend and front end deployment for this entire repo building system
 
