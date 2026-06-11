@@ -5,3 +5,10 @@ services:
     dockerfilePath: ai_connector/Github-Connector/artifacts/api-server/Dockerfile
     branch: main
     plan: free
+
+  - type: web
+    name: haloit-msp
+    env: docker
+    dockerfilePath: halo-system/Dockerfile
+    branch: main
+    plan: free
