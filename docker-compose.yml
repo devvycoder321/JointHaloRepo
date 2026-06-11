@@ -1,38 +1,97 @@
-version: "3.8"
-services:
-  api:
-    build:
-      context: .
-      dockerfile: ai_connector/Github-Connector/artifacts/api-server/Dockerfile
-    image: haloit-api:local
-    environment:
-      - PORT=8080
-      - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
-      - SESSION_SECRET=${SESSION_SECRET}
-      - AI_INTEGRATIONS_OPENAI_API_KEY=${AI_INTEGRATIONS_OPENAI_API_KEY}
-    ports:
-      - "8080:8080"
-
-  frontend:
-    build:
-      context: ai_connector/Github-Connector/artifacts/halo-ai
-      dockerfile: Dockerfile
-    image: haloit-frontend:local
-    ports:
-      - "3000:80"
 version: '3.8'
+
+# JointHaloRepo Docker Compose Configuration
+# Orchestrates TWO independent systems:
+# 1. MSP Business System (halo-system/)
+# 2. Standalone AI System (ai_connector/)
+
 services:
-  halo:
+  # ═══════════════════════════════════════════════════════════════
+  # MSP BUSINESS SYSTEM - Main Halo IT Services 365 Platform
+  # ═══════════════════════════════════════════════════════════════
+  
+  msp-backend:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: halo-system
+      dockerfile: halo-system/Dockerfile
+    container_name: haloitservices-backend
     ports:
       - "3000:3000"
     volumes:
       - ./halo-system/backend:/app
+      - /app/node_modules
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3000
+      - DATABASE_URL=${DATABASE_URL:-sqlite://./dev.db}
+      - SESSION_SECRET=${SESSION_SECRET:-dev-secret-min-32-chars-required}
+      - JWT_SECRET=${JWT_SECRET:-dev-jwt-min-32-chars-required}
+      - AI_INTEGRATIONS_OPENAI_API_KEY=${AI_INTEGRATIONS_OPENAI_API_KEY:-}
     restart: unless-stopped
+    networks:
+      - haloit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  msp-frontend:
+    build:
+      context: halo-system/frontend
+      dockerfile: Dockerfile
+    container_name: haloitservices-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - msp-backend
+    networks:
+      - haloit-network
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+
+  # ═══════════════════════════════════════════════════════════════
+  # STANDALONE AI SYSTEM - Autonomous AI Agent Framework
+  # ═══════════════════════════════════════════════════════════════
+  
+  ai-backend:
+    build:
+      context: .
+      dockerfile: ai_connector/Github-Connector/artifacts/api-server/Dockerfile
+    container_name: ai-system-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=development
+      - DATABASE_URL=${AI_DATABASE_URL:-sqlite://./ai-dev.db}
+      - SESSION_SECRET=${AI_SESSION_SECRET:-ai-dev-secret-min-32-chars}
+      - AI_INTEGRATIONS_OPENAI_API_KEY=${AI_INTEGRATIONS_OPENAI_API_KEY:-}
+    restart: unless-stopped
+    networks:
+      - haloit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  ai-frontend:
+    build:
+      context: ai_connector/Github-Connector/artifacts/halo-ai
+      dockerfile: Dockerfile
+    container_name: ai-system-frontend
+    ports:
+      - "8000:80"
+    depends_on:
+      - ai-backend
+    networks:
+      - haloit-network
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+
+networks:
+  haloit-network:
+    driver: bridge

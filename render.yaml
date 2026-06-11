@@ -1,14 +1,81 @@
 services:
+  # ═══════════════════════════════════════════════════════════════
+  # MSP BUSINESS SYSTEM - Halo IT Services 365 Platform Backend
+  # ═══════════════════════════════════════════════════════════════
   - type: web
-    name: haloit-api
-    env: docker
-    dockerfilePath: ai_connector/Github-Connector/artifacts/api-server/Dockerfile
-    branch: main
-    plan: free
-
-  - type: web
-    name: haloit-msp
+    name: haloit-msp-backend
     env: docker
     dockerfilePath: halo-system/Dockerfile
     branch: main
     plan: free
+    envVars:
+      - key: PORT
+        value: "3000"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: haloit-postgres-db
+          property: connectionString
+      - key: SESSION_SECRET
+        sync: false
+
+  # ═══════════════════════════════════════════════════════════════
+  # MSP BUSINESS SYSTEM - Frontend (optional if using React)
+  # ═══════════════════════════════════════════════════════════════
+  # Uncomment and configure when React frontend is built
+  # - type: web
+  #   name: haloit-msp-frontend
+  #   env: static_site
+  #   buildCommand: "cd halo-system/frontend && npm run build"
+  #   staticPublishPath: halo-system/frontend/dist
+  #   branch: main
+  #   plan: free
+
+  # ═══════════════════════════════════════════════════════════════
+  # STANDALONE AI SYSTEM - Backend
+  # ═══════════════════════════════════════════════════════════════
+  - type: web
+    name: haloit-ai-backend
+    env: docker
+    dockerfilePath: ai_connector/Github-Connector/artifacts/api-server/Dockerfile
+    branch: main
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: haloit-ai-postgres-db
+          property: connectionString
+      - key: AI_INTEGRATIONS_OPENAI_API_KEY
+        sync: false
+
+  # ═══════════════════════════════════════════════════════════════
+  # STANDALONE AI SYSTEM - Frontend (optional)
+  # ═══════════════════════════════════════════════════════════════
+  # Uncomment and configure when AI frontend is ready
+  # - type: web
+  #   name: haloit-ai-frontend
+  #   env: static_site
+  #   buildCommand: "cd ai_connector/Github-Connector/artifacts/halo-ai && npm run build"
+  #   staticPublishPath: ai_connector/Github-Connector/artifacts/halo-ai/dist
+  #   branch: main
+  #   plan: free
+
+  # ═══════════════════════════════════════════════════════════════
+  # DATABASES
+  # ═══════════════════════════════════════════════════════════════
+  - type: pserv
+    name: haloit-postgres-db
+    env: postgres
+    plan: free
+    ipAllowList: []
+
+  - type: pserv
+    name: haloit-ai-postgres-db
+    env: postgres
+    plan: free
+    ipAllowList: []
