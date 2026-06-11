@@ -9,8 +9,8 @@ RUN npm install -g pnpm@10
 # Copy whole repository (monorepo) so workspace:* packages resolve
 COPY . /usr/src/app
 
-# Install all dependencies and build the server
-RUN pnpm install --frozen-lockfile
+# Install only the API server workspace dependencies and build the server
+RUN pnpm install --frozen-lockfile --filter @workspace/api-server...
 RUN pnpm --filter @workspace/api-server run build
 
 # Expose port (the app listens on PORT env)
