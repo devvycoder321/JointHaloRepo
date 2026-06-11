@@ -4,7 +4,7 @@ FROM node:20-bullseye-slim
 WORKDIR /usr/src/app
 
 # Install pnpm
-RUN npm install -g pnpm@9
+RUN npm install -g pnpm@10
 
 # Copy whole repository (monorepo) so workspace:* packages resolve
 COPY . /usr/src/app
