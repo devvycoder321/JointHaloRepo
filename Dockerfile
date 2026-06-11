@@ -1,20 +1,16 @@
-FROM node:20-bullseye-slim
+FROM node:18-alpine
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm@10
+# Install app dependencies
+COPY halo-system/backend/package*.json ./
+RUN npm install --production
 
-# Copy whole repository so workspace packages resolve
-COPY . /usr/src/app
+# Bundle app source
+COPY halo-system/backend ./
 
-# Install only the API server workspace dependencies and build the server
-RUN pnpm install --frozen-lockfile --filter @workspace/api-server...
-RUN pnpm --filter @workspace/api-server run build
+ENV PORT=3000
+EXPOSE 3000
 
-# Expose port (the app listens on PORT env)
-EXPOSE 8080
-
-# Start the built server
-CMD ["node", "./dist/index.mjs"]
+CMD ["npm", "start"]
